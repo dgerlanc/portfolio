@@ -1,0 +1,61 @@
+Version: 0.4-5 (2010-02-18, released)
+
+	* Fixed bug in map.market where use of particular scale values caused
+	failure.  Thanks to Luke Vilnis for supplying this patch.
+
+Version: 0.4-4 (2008-10-31, released)
+
+	* Added new returns and financials columns to assay data.
+
+Version: 0.4-0 (2007-04-22, released)
+
+	* Refactored and improved matching facilities in the
+	matchedPortfolio class.
+
+	* Added calls to validObject() to many more methods.
+
+	* Added weight.style to begin to address the different ways of
+	calculating weights/rethinking the equity slot.
+
+        * Changed mechanics of dummy chunks in the tradelist class to make
+	adjusting total investment level more precise.
+	
+Version: 0.3-3 (2007-01-16, released)
+
+	* Set default row.names of data frames in class prototypes to
+	integer() so that tests pass under 2.4.x and 2.5.x.
+
+Version: 0.3-2 (2007-01-08, released)
+
+	* Fixed test case to handle new default of integer row.names in
+	zero-length data frames.
+
+Version: 0.3-1 (2006-10-04, released)
+
+	* Fixed invalid character escape sequences.
+
+Version: 0.3-0 (2006-10-01, released)
+
+	* Removed classes dealing with temporal data.
+	
+	* Added tradelist class and vignette.
+
+	* Added the trades class and expose method on portfolio.
+
+	* Improved the performance method on the portfolio class to accept
+	returns, start and end prices and include a notion of profit.
+
+	* Added matching functionality from the MatchIt package.  MatchIt
+	is no longer in Suggests.
+
+Version: 0.2-2 (2006-06-18, released)
+
+	* Adjusted tests for change in class of default row.names
+	attribute in data.frame objects in R 2.4.0.
+
+Version: 0.2-1 (2006-04-12, released)
+
+	* Expanded set of test cases.
+
+	* Removed invalid assignment in class declaration of
+	portfolioHistory.
