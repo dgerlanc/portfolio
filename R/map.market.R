@@ -20,7 +20,7 @@
 
 map.market <- function(id, area, group, color,
                        scale = NULL,
-                       lab   = c(TRUE, FALSE),
+                       lab   = c("group"=TRUE, "id"=FALSE),
                        main  = "Map of the Market",
                        print = TRUE
                        ){
@@ -38,6 +38,12 @@ map.market <- function(id, area, group, color,
     lab[2] <- lab[1]
   }
 
+  ## If 'id' parameter not specified create sequential ids
+  if (missing(id)) {
+    id <- seq_along(area)
+    lab["id"] <- FALSE
+  }
+
   ## NA values in the id parameter are not allowed.
 
   stopifnot(all(!is.na(id)))
@@ -50,9 +56,16 @@ map.market <- function(id, area, group, color,
   ## area, group and color need to be non-NA for a record to be
   ## included in the viz.
 
-  if(any(is.na(data$area) | is.na(data$group) | is.na(data$color))){
+  na.idx <- which(is.na(data$area) | is.na(data$group) | is.na(data$color))
+  if(length(na.idx)){
     warning("Stocks with NAs for area, group, or color will not be shown")
-    data <- subset(data, !is.na(area) & !is.na(group) & !is.na(color))
+    data <- data[-na.idx, ]
+  }
+
+  ## Remove records with zero areas
+  zero.area.idx <- which(data$area == 0)
+  if(length(zero.area.idx)) {
+    data <- data[-zero.area.idx, ]
   }
 
   ## If no records pass the above criteria, stop.

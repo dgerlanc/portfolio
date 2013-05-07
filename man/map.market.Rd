@@ -9,7 +9,7 @@
 \usage{
 map.market(id, area, group, color,
            scale = NULL,
-           lab   = c(TRUE, FALSE),
+           lab   = c("group"=TRUE, "id"=FALSE),
            main  = "Map of the Market",
            print = TRUE)
 }
