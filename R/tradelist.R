@@ -40,7 +40,7 @@ setMethod("initialize",
           signature(.Object = "tradelist"),
           function(.Object, orig, target, ...){
 
-            .Object <- callNextMethod()
+            .Object <- callNextMethod(.Object, ...)
 
             ## Allows creation of an "empty" tradelist
                                      
