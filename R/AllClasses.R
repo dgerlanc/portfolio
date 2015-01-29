@@ -8,8 +8,6 @@
 
 ## Load hook for methods
 
-.onLoad <- function(lib, pkg) require(methods)
-
 setOldClass(c("Date"))
 
 ## The size slot of the portfolioBasic class requires either a
