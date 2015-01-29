@@ -37,7 +37,7 @@ setMethod("plot",
               tlist[[var]] <- barchart(variable ~ exposure, data = data, origin = 0, main = title)
             }
 
-            portfolio:::.trellis.multiplot(tlist)
+            .trellis.multiplot(tlist)
           }
           
           )

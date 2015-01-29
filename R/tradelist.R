@@ -57,8 +57,8 @@ setMethod("initialize",
                   .Object@target.equity <- target@equity
                 }
                 else{
-                  mv.long <- portfolio:::mvLong(target)
-                  mv.short <- portfolio:::mvShort(target)
+                  mv.long <- mvLong(target)
+                  mv.short <- mvShort(target)
 
                   if(mv.long > 0 && mv.short == 0){
                     .Object@target.equity <- mv.long
@@ -184,8 +184,8 @@ setMethod("calcCandidates",
             ## Save off some important information about the original
             ## and target portfolios.
 
-            object@mv.long.orig  <- portfolio:::mvLong(orig)
-            object@mv.short.orig <- portfolio:::mvShort(orig)
+            object@mv.long.orig  <- mvLong(orig)
+            object@mv.short.orig <- mvShort(orig)
 
             if(nrow(p.diff) > 0 && !"round.lot" %in% names(p.diff)){
               p.diff$round.lot <- 1
@@ -214,7 +214,7 @@ setMethod("calcCandidates",
                        round.lot[is.na(round.lot)] <- 1
                        
                        current.diff <- target - orig
-                       round.lot.diff <- portfolio:::.nearest.multiple(current.diff, round.lot)
+                       round.lot.diff <- .nearest.multiple(current.diff, round.lot)
                        orig + round.lot.diff
                      },
 
@@ -713,7 +713,7 @@ setMethod("calcChunks",
                 
                 p.row <- candidates.slim[i,]
                 chunk <- 1
-                chunk.shares <- portfolio:::.nearest.multiple(object@chunk.usd / p.row[[object@price.var]],
+                chunk.shares <- .nearest.multiple(object@chunk.usd / p.row[[object@price.var]],
                                                               p.row$round.lot)
 
                 ## If chunk.shares is 0, that is, a single chunk isn't

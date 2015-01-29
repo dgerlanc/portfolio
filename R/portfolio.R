@@ -136,7 +136,7 @@ setMethod("calcShares",
             if(nrow(x) > 0 && !"round.lot" %in% names(x)){
               x$round.lot <- 1
             }
-            x$shares <- portfolio:::.nearest.multiple(x$shares, x$round.lot)
+            x$shares <- .nearest.multiple(x$shares, x$round.lot)
             
             object@shares <- x[c("id","shares")]
 

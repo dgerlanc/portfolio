@@ -132,7 +132,7 @@ setMethod("matching",
   data <- NULL
   
   for(n in names(object@data)){
-    data.sub <- portfolio:::.matched.perf.df(object@data[[n]])
+    data.sub <- .matched.perf.df(object@data[[n]])
     data.sub$period <- n
     data <- rbind(data.sub, data)
   }
