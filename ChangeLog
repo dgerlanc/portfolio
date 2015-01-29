@@ -1,3 +1,8 @@
+Version: 0.4-6 (2013-07-08, released)
+
+  * Fixed bug in map.market where records with an 'area' of 0 caused
+  failure. Now, removes these records.
+
 Version: 0.4-5 (2010-02-18, released)
 
 	* Fixed bug in map.market where use of particular scale values caused
