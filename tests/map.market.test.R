@@ -8,9 +8,15 @@
 
 library(portfolio)
 
-load("map.market.test.RData")
 
-## save(test.data, truth, file = "map.market.test.RData", compress = TRUE)
+if (base::getRversion() <= '3.6.3') {
+  load("map.market.test.RData")
+} else {
+  load("map.market.test.gt363.RData")
+}
+
+## save(test.data, truth, file = "map.market.test.gt363.RData", version=2, compress=TRUE)
+## truth = getGrob(result, "MAP")
 
 result <- map.market(id = test.data$id, area = test.data$area,
                      group = test.data$group, color = test.data$color,

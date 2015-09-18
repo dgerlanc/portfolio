@@ -8,9 +8,10 @@
 
 library(portfolio)
 
-load("portfolioBasic.exposure.test.RData")
+datapath = "portfolioBasic.exposure.test.RData"
+load(datapath)
 
-## save(data, exp.1, x, file = "portfolioBasic.exposure.test.RData", compress = TRUE)
+## save(data, exp.1, x, file=datapath, compress=TRUE, version=2)
 
 ## data <- data.frame(id = 1:20, in.var = 1:20)
 ## data$in.var <- as.numeric(data$in.var)
@@ -26,6 +27,7 @@ load("portfolioBasic.exposure.test.RData")
 ## x <- create(x)
 
 exp.1.test <- exposure(x, exp.var = c("by.var.1","by.var.2","by.var.3"))
+# class(exp.1@data$numeric$variable) 
 
 ## Function to test equality of data frame components of the exposure
 ## object's data slot.  Different default handling of row.names in
@@ -38,7 +40,7 @@ exp.df.equal <- function(e1, e2) {
          all.equal(e1$exposure, e2$exposure))
 }
 
-stopifnot(all.equal(names(exp.1@data), names(exp.1.test@data)),
-          exp.df.equal(exp.1@data$numeric,  exp.1.test@data$numeric),
-          exp.df.equal(exp.1@data$by.var.1, exp.1.test@data$by.var.1),
-          exp.df.equal(exp.1@data$by.var.2, exp.1.test@data$by.var.2))
+stopifnot(all.equal(names(exp.1@data), names(exp.1.test@data)))
+stopifnot(exp.df.equal(exp.1@data$numeric,  exp.1.test@data$numeric))
+stopifnot(exp.df.equal(exp.1@data$by.var.1, exp.1.test@data$by.var.1))
+stopifnot(exp.df.equal(exp.1@data$by.var.2, exp.1.test@data$by.var.2))

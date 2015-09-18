@@ -50,8 +50,8 @@
       warning("treat.var parameter overridden by formula f")
     }
     
-    treat.var  <- all.vars(getResponseFormula(f))
-    covariates <- all.vars(getCovariateFormula(f))
+    treat.var  <- all.vars(nlme::getResponseFormula(f))
+    covariates <- all.vars(nlme::getCovariateFormula(f))
 
     if(isTRUE(all.equal(method, "random"))){
       warning("Covariates in formula ignored when using random matching")

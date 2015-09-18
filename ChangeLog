@@ -1,3 +1,18 @@
+Version: 0.5-0 (2020-03-09, released)
+
+  * API change where exposure and calcCandidates now explicitly 
+  return character vector instead of either factors or characters 
+  based on stringsAsFactors.
+  
+  * Replace all global symbols in portfolio.R, portfolioBasic.R,
+  and tradelist.R with explicit data.frame column lookups. Mostly,
+  replaced usage of `subset`.
+
+  * Update map.market regression test to handle changes to grid
+  in R 4.0.0. Thanks to Paul Murrell and Thomas Lin Pedersen
+  for suggestions on the fix.
+	
+
 Version: 0.4-6 (2013-07-08, released)
 
   * Fixed bug in map.market where records with an 'area' of 0 caused

@@ -16,7 +16,7 @@ setMethod("summary",
             data.orig    <- data[!data$match,]
 
             data.summary <- merge(data.orig[c("period","return","omitted.treatment","omitted.control","exposure","num")],
-                                  aggregate(data.matched[c("return","exposure","num")], by = list(period = data.matched$period), mean),
+                                  stats::aggregate(data.matched[c("return","exposure","num")], by = list(period = data.matched$period), mean),
                                   by = "period")
             
             names(data.summary) <- c("period","orig","omit.trt","omit.ctrl","orig.exp","orig.num","match","match.exp","match.num")

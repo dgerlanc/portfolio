@@ -1,12 +1,15 @@
 import(methods)
 importFrom(graphics, plot)
+
 importFrom(grid, addGrob)
 importFrom(grid, gList)
 importFrom(grid, gTree)
 importFrom(grid, gpar)
+importFrom(grid, grid.draw)
 importFrom(grid, grid.layout)
 importFrom(grid, grid.newpage)
-importFrom(grid, grid.draw)
+importFrom(grid, grid.segments)
+importFrom(grid, grid.text)
 importFrom(grid, popViewport)
 importFrom(grid, pushViewport)
 importFrom(grid, rectGrob)
@@ -14,15 +17,21 @@ importFrom(grid, segmentsGrob)
 importFrom(grid, textGrob)
 importFrom(grid, viewport)
 importFrom(grid, unit)
+
 importFrom(lattice, barchart)
+
 importFrom(nlme, getResponseFormula)
 importFrom(nlme, getCovariateFormula)
 
+importFrom("lattice", histogram, panel.histogram, xyplot)
+
+importFrom("stats", "aggregate", "binomial", "fitted", "formula",
+           "glm", "median", "qnorm", "quantile")
+importFrom("utils",  "head", "tail")
 
 export(
        "weight",
        "map.market"
-       
        )
 
 exportClasses(

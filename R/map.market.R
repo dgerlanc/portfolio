@@ -100,8 +100,8 @@ map.market <- function(id, area, group, color,
   ## Two color gradient functions to map [-1,0] to [red, black] and
   ## [0,1] to [black, green].
   
-  color.ramp.pos <- colorRamp(c("black", "green"))
-  color.ramp.neg <- colorRamp(c("black", "red"))
+  color.ramp.pos <- grDevices::colorRamp(c("black", "green"))
+  color.ramp.neg <- grDevices::colorRamp(c("black", "red"))
 
   ## Map a vector with values in [-1,1] to a vector of rgb colors.
   
@@ -116,7 +116,7 @@ map.market <- function(id, area, group, color,
                         }
                       },
                       x)
-    mapply(rgb, col.mat[1,], col.mat[2,], col.mat[3,], max = 255)
+    mapply(grDevices::rgb, col.mat[1,], col.mat[2,], col.mat[3,], max = 255)
   }
   
   ## Accepts the current viewport list and parameters for the next viewport

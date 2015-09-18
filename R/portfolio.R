@@ -326,9 +326,11 @@ setMethod("+",
               return(r)
             }
             else{
+              drop.na <- function(x) {
+                x@shares[!is.na(x@shares$shares), ]
+              }
               
-              w <- merge(subset(e1@shares, !is.na(e1@shares$shares)),
-                         subset(e2@shares, !is.na(e2@shares$shares)),
+              w <- merge(drop.na(e1), drop.na(e2),
                          suffixes = c(".e1", ".e2"), by = "id", all = TRUE)
               
 
@@ -422,7 +424,7 @@ setMethod("getYahooData",
 
               ## uses "append" mode in case we have more than 200 symbols
 
-              status <- download.file(QURL, destfile = my.csv,
+              status <- utils::download.file(QURL, destfile = my.csv,
                                       method = "auto", mode = "a", quiet = TRUE)
 
               if(status != 0){
@@ -439,7 +441,7 @@ setMethod("getYahooData",
             colClasses <- c("character", "numeric", "numeric", "character",
                             "numeric", "numeric")
 
-            x <- read.table(my.csv, sep = ",", col.names = col.names, as.is = TRUE,
+            x <- utils::read.table(my.csv, sep = ",", col.names = col.names, as.is = TRUE,
                             blank.lines.skip = TRUE, comment.char = "", nrows = nrow(data),
                             na.strings = "N/A")
             
@@ -519,7 +521,7 @@ setMethod("expose",
               ## dummy row we had to create in the case of an empty
               ## target), remove rows with NA id.
               
-              x <- subset(x, !is.na(id))
+              x <- x[!is.na(x$id), ]
 
               x$shares.orig <- ifelse(is.na(x$shares.orig), 0, x$shares.orig)
               x$shares.exp  <- ifelse(is.na(x$shares.exp), 0, x$shares.exp)
@@ -547,18 +549,18 @@ setMethod("expose",
 
               ## Take away closed positions.
 
-              x <- subset(x, shares != 0)
+              x <- x[x$shares != 0, ]
 
               object@shares <- x[c("id","shares")]
 
               ## Now clean up weights data frame.  First, remove
               ## weights for closed positions.
 
-              object@weights <- subset(object@weights, id %in% object@shares$id)
+              object@weights <- object@weights[object@weights$id %in% object@shares$id, ]
 
               ## Then add NA weights for opened positions.
               
-              new.weights <- subset(object@shares, !id %in% object@weights$id)
+              new.weights <- object@shares[!object@shares$id %in% object@weights$id, ]
               if(nrow(new.weights) > 0){
                 names(new.weights) <- c("id","weight")
                 new.weights$weight <- NA
@@ -785,11 +787,11 @@ setMethod("contribution",
                 
                 x[[att.cut]] <- cut(x[[att]], quantiles, na.rm = TRUE)
               }
-              a <- aggregate(list(x[c("weight","contrib")]),
+              a <- stats::aggregate(list(x[c("weight","contrib")]),
                              list(variable = x[[att.cut]]), sum, na.rm = TRUE)
               
               ## Make sure that all levels in the universe-based
-              ## intervals are present in this aggregate, and that
+              ## intervals are present in this stats::aggregate, and that
               ## they appear in the correct order.
 
               all.levels <- levels(x[[att.cut]])
@@ -852,7 +854,7 @@ setMethod("portfolioDiff",
             ## left operand's data slot gets precedence).
             
             p.diff.data <- rbind(object@data[keep.cols],
-                                 subset(x@data[keep.cols], ! id %in% object@data$id))
+                                 x@data[!x@data$id %in% object@data$id, keep.cols])
 
             p.diff <- new("portfolio",
                           name = "Portfolio diff", data = p.diff.data)
@@ -895,7 +897,7 @@ setMethod("portfolioDiff",
               ## portfolios should not be included in the diff
               ## portfolio.
               
-              s.diff <- subset(s.diff, shares != 0)
+              s.diff <- s.diff[s.diff$shares != 0, ]
               
               p.diff@shares <- rbind(s.diff[c("id","shares")], s.diff.na)
             }

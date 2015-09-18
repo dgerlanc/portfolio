@@ -226,7 +226,7 @@ setMethod("calcCandidates",
             ## removes stocks from the tradelist that have the same
             ## number of shares in the original and target portfolios
 
-            p.diff <- subset(p.diff, orig != target)
+            p.diff <- p.diff[p.diff$orig != p.diff$target, ]
 
             ## Side changes are broken up here replacing each side change row
             ## with two rows, one for entry and one for exit.
@@ -234,7 +234,7 @@ setMethod("calcCandidates",
             ## When sides are then calculated, we can be sure that each row
             ## corresponds to exactly one side in {"B","S","X","C"}.
 
-            side.changes <- subset(p.diff, orig * target < 0)
+            side.changes <- p.diff[(p.diff$orig * p.diff$target < 0), ]
             p.diff <- p.diff[! p.diff$id %in% side.changes$id,]
 
             if (nrow(side.changes) > 0) {
@@ -287,7 +287,8 @@ setMethod("calcCandidates",
                 object@restricted <-
                   rbind(object@restricted,
                         cbind(p.diff[!p.diff$id %in% object@data$id,],
-                              data.frame(reason = "Not in data slot")
+                              data.frame(reason = "Not in data slot",
+                                         stringsAsFactors = FALSE)
                               )[restrictedCols(object)])
 
                 p.diff <- p.diff[p.diff$id %in% object@data$id,]
@@ -302,7 +303,8 @@ setMethod("calcCandidates",
                 object@restricted <-
                   rbind(object@restricted,
                         cbind(p.diff[is.na(p.diff[[object@price.var]]),],
-                              data.frame(reason = "Missing price")
+                              data.frame(reason = "Missing price",
+                                         stringsAsFactors = FALSE)
                               )[restrictedCols(object)])
                 
                 p.diff <- p.diff[!is.na(p.diff[[object@price.var]]),]
@@ -312,7 +314,8 @@ setMethod("calcCandidates",
                 object@restricted <-
                   rbind(object@restricted,
                         cbind(p.diff[is.na(p.diff$volume),],
-                              data.frame(reason = "Missing volume")
+                              data.frame(reason = "Missing volume",
+                                         stringsAsFactors = FALSE)
                               )[restrictedCols(object)])
                 
                 p.diff <- p.diff[!is.na(p.diff$volume),]
@@ -344,24 +347,20 @@ setMethod("calcCandidates",
               ## data frame.
 
               if(nrow(p.diff) > 0){
+                freqs = as.data.frame(table(p.diff$id, dnn = "id"))
+                freqs_ids = freqs[freqs$Freq > 1, 'id', drop=TRUE]
                 side.change.enter <- 
-                  subset(p.diff,
-                         id %in% subset(as.data.frame(table(p.diff$id,
-                                                            dnn = "id")),
-                                        Freq > 1)$id
-                         & side %in% c("X","B"))
+                  p.diff[p.diff$id %in% freqs_ids & p.diff$side %in% c("X", "B"), ]
 
                 p.diff <- 
-                  subset(p.diff,
-                         !(id %in% subset(as.data.frame(table(p.diff$id,
-                                                              dnn = "id")),
-                                          Freq > 1)$id
-                           & side %in% c("X","B")))
+                  p.diff[!(p.diff$id %in% freqs_ids & p.diff$side %in% c("X", "B")), ]
+
                 
                 if(nrow(side.change.enter) > 0){
-                  side.change.enter <- cbind(side.change.enter,
-                                             data.frame(reason =
-                                                        "Side change enter"))
+                  side.change.enter <- cbind(
+                    side.change.enter,
+                    data.frame(reason="Side change enter", stringsAsFactors = FALSE))
+                  
                   object@restricted <-
                     rbind(object@restricted,
                           side.change.enter[restrictedCols(object)])
@@ -380,7 +379,7 @@ setMethod("calcCandidates",
                 object@restricted <-
                   rbind(object@restricted,
                         restricted[restrictedCols(object)])
-                p.diff <- subset(p.diff, ! id %in% restricted$id)
+                p.diff <- p.diff[!p.diff$id %in% restricted$id, ]
               }
 
               ## Enforce trade market value minimum.  Ideally what we
@@ -398,7 +397,8 @@ setMethod("calcCandidates",
                         cbind(p.diff[abs(p.diff$mv) < object@trade.usd.min &
                                      p.diff$orig   != 0 &
                                      p.diff$target != 0,],
-                              data.frame(reason = "Trade too small")
+                              data.frame(reason = "Trade too small",
+                                         stringsAsFactors = FALSE)
                               )[restrictedCols(object)])
 
                 p.diff <- p.diff[!(abs(p.diff$mv) < object@trade.usd.min &
@@ -579,7 +579,7 @@ setMethod("calcRanks",
             ## Removes duplicates from "all.sorts". Associates with
             ## each trade the best rank any sort has assigned it
 
-            top.ranks  <- aggregate(all.sorts[c("rank")], by = list(id = all.sorts$id), min)
+            top.ranks  <- stats::aggregate(all.sorts[c("rank")], by = list(id = all.sorts$id), min)
 
             ## Updates the trade rankings using the latest measure of
             ## rank as determined in the two prior steps
@@ -893,7 +893,7 @@ setMethod("calcSwaps",
             ## tca.rank.  By this mechanism we can categorically
             ## exclude some chunks in our tca functions.
 
-            chunks <- subset(chunks, !is.na(tca.rank))
+            chunks <- chunks[!is.na(chunks$tca.rank), ]
 
             ## Split up chunks by side.
             
@@ -1139,9 +1139,11 @@ setMethod("calcSwapsActual",
             ## exceeds our target turnover.  Note that it is
             ## important that dummy chunks have a zero market value
             ## so that they play nicely with this process.
-            
-            swaps.actual <- subset(swaps, cumsum(abs(chunk.mv.enter) +
-                                                 abs(chunk.mv.exit)) <= object@turnover)
+
+            entr_exit <- cumsum(
+              abs(swaps$chunk.mv.enter) + abs(swaps$chunk.mv.exit))
+                                            
+            swaps.actual <- swaps[entr_exit <= object@turnover, ]
 
             ## If to.equity == TRUE, however, we don't want to worsen
             ## exposure by doing the last set of remaining trades.
@@ -1157,7 +1159,10 @@ setMethod("calcSwapsActual",
             ## dummy.quality %in% "bad".
 
             if(object@to.equity){
-              swaps.actual <- subset(swaps.actual, ! (dummy.quality.enter %in% "bad" | dummy.quality.exit %in% "bad"))
+              good.idx <- !(
+                swaps.actual$dummy.quality.enter %in% "bad" |
+                swaps.actual$dummy.quality.exit %in% "bad")
+              swaps.actual <- swaps.actual[good.idx, ]
             }
             
             object@swaps.actual <- swaps.actual
@@ -1200,12 +1205,12 @@ setMethod("calcChunksActual",
             cols.enter <- grep("\\.enter", names(swaps.actual), value = TRUE)
             chunks.enter <- swaps.actual[cols.enter]
             names(chunks.enter) <- sub("\\.enter", "", names(chunks.enter))
-            chunks.enter <- subset(chunks.enter, id != .dummy.id())
+            chunks.enter <- chunks.enter[chunks.enter$id != .dummy.id(), ]
 
             cols.exit <- grep("\\.exit", names(swaps.actual), value = TRUE)
             chunks.exit <- swaps.actual[cols.exit]
             names(chunks.exit) <- sub("\\.exit", "", names(chunks.exit))
-            chunks.exit <- subset(chunks.exit, id != .dummy.id())
+            chunks.exit <- chunks.exit[chunks.exit$id != .dummy.id(), ]
 
             chunks.actual <- rbind(chunks.enter, chunks.exit)
 
@@ -1250,8 +1255,8 @@ setMethod("calcActual",
             ## we need to roll these chunks up on a per-security
             ## basis.
             
-            actual <- subset(object@ranks,
-                             id %in% object@chunks.actual$id)
+            actual <- object@ranks[object@ranks$id %in% object@chunks.actual$id, ]
+                           
 
             ## In future versions, this should be abstracted to "by =
             ## id.var".  Also, the strange subsetting operation that
@@ -1375,7 +1380,7 @@ setMethod("trimSide",
             trades.side <- trades.side[order(trades.side$rank.t, decreasing = decreasing),]
             trades.side <- trades.side[cumsum(abs(trades.side$mv)) < abs(value),]
 
-            object@actual <- subset(object@actual, ! id %in% trades.side$id)
+            object@actual <- object@actual[!object@actual$id %in% trades.side$id, ]
             object
           }
           )
@@ -1479,8 +1484,8 @@ setMethod("show",
                     sep = "")
               }
 
-              long  <- subset(object@actual, side %in% c("B","S"))
-              short <- subset(object@actual, side %in% c("C","X"))
+              long  <- object@actual[object@actual$side %in% c("B","S"), ]
+              short <- object@actual[object@actual$side %in% c("C","X"), ]
               cat(
                   sprintf("%-7s %6s %12s",
                           "\nnet (l)",
@@ -1579,7 +1584,7 @@ setMethod("show",
               cat("Sort thresholds:\n\n")
 
               all.sorts  <- do.call(rbind, lapply(object@rank.sorts, function(x) { x[c("id","rank")] }))
-              top.ranks  <- aggregate(all.sorts[c("rank")], by = list(id = all.sorts$id), min)
+              top.ranks  <- stats::aggregate(all.sorts[c("rank")], by = list(id = all.sorts$id), min)
               
               for(s in names(object@sorts)){
 

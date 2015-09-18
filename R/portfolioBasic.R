@@ -227,8 +227,8 @@ setMethod("summary",
             columns  <- c("id", weight.col)
             disp.num <- 5
             
-            long  <- subset(x, weight > 0)
-            short <- subset(x, weight < 0)
+            long  <- x[x$weight > 0, ]
+            short <- x[x$weight < 0, ]
 
             cat("Portfolio: ", object@name, "\n\n",
                 sprintf("       %6s %12s", "count", "weight"), "\n",
@@ -338,14 +338,14 @@ setMethod("exposure",
               stop("Cannot find all exp.var's")
             }
             
-            x.long    <- subset(x, weight > 0)
-            x.short   <- subset(x, weight < 0)
+            x.long    <- x[x$weight > 0, ]
+            x.short   <- x[x$weight < 0, ]
 
             ## Completed exposure data frames are collected in
             ## all.exp.
             
             all.exp <- list()
-            
+
             for(ev in exp.var){
 
               ## For exp.var's of all types, construct a data frame
@@ -359,13 +359,15 @@ setMethod("exposure",
 
                 long  <- as.data.frame(as.matrix(tapply(x.long$weight,
                                                         as.character(x.long[[ev]]), sum,
-                                                        na.rm = TRUE)))
+                                                        na.rm = TRUE)),
+                                       stringsAsFactors=FALSE)
                 names(long) <- "long"
                 long$variable <- row.names(long)
                 
                 short <- as.data.frame(as.matrix(tapply(x.short$weight,
                                                         as.character(x.short[[ev]]), sum,
-                                                        na.rm = TRUE)))
+                                                        na.rm = TRUE)),
+                                       stringsAsFactors=FALSE)
                 names(short) <- "short"
                 short$variable <- row.names(short)
               }
@@ -377,18 +379,21 @@ setMethod("exposure",
                 long  <- data.frame(variable  = ev,
                                     long  =
                                     sum(x.long$weight * x.long[[ev]],
-                                        na.rm = TRUE))
+                                        na.rm = TRUE),
+                                    stringsAsFactors=FALSE)
                 short <- data.frame(variable  = ev,
                                     short =
                                     sum(x.short$weight * x.short[[ev]],
-                                        na.rm = TRUE))
+                                        na.rm = TRUE),
+                                    stringsAsFactors=FALSE)
               }
 
               ## We might not have any rows in long or short,
               ## so don't use merge here.
               
               exp       <- data.frame(variable = union(as.character(long$variable),
-                                                       as.character(short$variable)))
+                                                       as.character(short$variable)),
+                                      stringsAsFactors=FALSE)
               exp$long  <- long$long[match(exp$variable, long$variable)]
               exp$short <- short$short[match(exp$variable, short$variable)]
               
@@ -550,7 +555,7 @@ setMethod("contribution",
                 
                 x[[att.cut]] <- cut(x[[att]], quantiles, na.rm = TRUE)
               }
-              a <- aggregate(list(x[c("weight","contrib")]),
+              a <- stats::aggregate(list(x[c("weight","contrib")]),
                              list(variable = x[[att.cut]]), sum, na.rm = TRUE)
               
               ## Make sure that all levels in the universe-based
@@ -608,8 +613,10 @@ setMethod("portfolioDiff",
             ## same columns in both portfolios' data slots.
             
             stopifnot(setequal(names(object@data), names(x@data)))
-            p.diff.data <- rbind(object@data,
-                                 subset(x@data, ! id %in% object@data$id))
+            p.diff.data <- rbind(
+              object@data,
+              x@data[!x@data$id %in% object@data$id, ,drop=FALSE])
+
 
             p.diff <- new("portfolioBasic",
                           name = "Portfolio diff", data = p.diff.data)
@@ -626,15 +633,15 @@ setMethod("portfolioDiff",
 
               ## Populate w.diff.na if there are stocks in either
               ## portfolio with an na weight.
-              
-              w.diff.na <- subset(w.diff,
-                                  id %in% union(object@weights$id[is.na(object@weights$weight)],
-                                                x@weights$id[is.na(x@weights$weight)]))
+
+              all.ids <- union(object@weights$id[is.na(object@weights$weight)],
+                               x@weights$id[is.na(x@weights$weight)])
+              w.diff.na <- w.diff[w.diff$id %in% all.ids, ]
 
               w.diff.na$weight <- NA
               w.diff.na <- w.diff.na[c("id","weight")]
               
-              w.diff <- subset(w.diff, ! id %in% w.diff.na$id)
+              w.diff <- w.diff[!w.diff$id %in% w.diff.na$id, ]
             }
             
             ## Make NA weights 0 for those stocks that were in one
@@ -653,7 +660,7 @@ setMethod("portfolioDiff",
             ## portfolios should not be included in the diff
             ## portfolio.
             
-            w.diff <- subset(w.diff, weight != 0)
+            w.diff <- w.diff[w.diff$weight != 0, ]
             
             p.diff@weights <- rbind(w.diff[c("id","weight")], w.diff.na)
 
@@ -747,7 +754,7 @@ setMethod("matching",
 
             if(any(is.na(object@weights$weight))){
               omitted.treatment <- omitted.treatment + sum(is.na(object@weights$weight))
-              object@weights <- subset(object@weights, is.na(weight))
+              object@weights <- object@weights[is.na(object@weights$weight), ]
             }
 
             ## Now all omissions go into data.nok.
@@ -782,7 +789,7 @@ setMethod("matching",
 
             for(i in c(object@ret.var, covariates, exact)){
               data.nok <- rbind(data.nok, data[is.na(data[[i]]),])
-              data     <- subset(data, !id %in% data.nok$id)
+              data     <- data[!data$id %in% data.nok$id, ]
             }
             
             omitted.treatment <- omitted.treatment + sum(data.nok$treatment)
@@ -794,7 +801,7 @@ setMethod("matching",
             ## _actually_ matching against.
 
             object@data <- data[data.cols.orig]
-            object@weights <- subset(object@weights, !id %in% data.nok$id)
+            object@weights <- object@weights[!object@weights$id %in% data.nok$id, ]
             
             validObject(object)
             
@@ -1020,9 +1027,10 @@ setMethod("+",
               ## portfolio sum includes a weight for a security iff
               ## the security has a non-na weight in at least one of
               ## the addends.
-
-              w <- merge(subset(e1@weights, !is.na(weight)),
-                         subset(e2@weights, !is.na(weight)),
+              dropna.wt <- function(x) {
+                x@weights[!is.na(x@weights$weight), ]
+              }
+              w <- merge(dropna.wt(e1), dropna.wt(e2),
                          suffixes = c(".e1", ".e2"), by = "id", all = TRUE)
 
 
@@ -1033,8 +1041,8 @@ setMethod("+",
               r@weights <- w[c("id","weight")]
 
               ## Remove entries that now have zero weight.
-
-              r@weights <- subset(r@weights, is.na(weight) | weight != 0)
+              remove_idx = is.na(r@weights$weight) | r@weights$weight != 0
+              r@weights <- r@weights[remove_idx, ,drop=FALSE]
               
               ## The data slot in the sum portfolio needs to include a
               ## row for each security in the set union of securities

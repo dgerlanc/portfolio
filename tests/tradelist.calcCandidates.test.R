@@ -10,7 +10,7 @@ library(portfolio)
 
 load("tradelist.calcCandidates.test.RData")
 
-## save(data, p.orig, p.target, truth.candidates, truth.restricted, truth.2, truth.3, file = "tradelist.calcCandidates.test.RData", compress = TRUE)
+## save(data, p.orig, p.target, truth.candidates, truth.restricted, truth.2, truth.3, file = "tradelist.calcCandidates.test.RData", compress = TRUE, version=2)
 
 ## Creates base objects for use in the remainder of the test
 
