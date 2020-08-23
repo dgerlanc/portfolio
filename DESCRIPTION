@@ -1,7 +1,7 @@
 Package: portfolio
 Title: Analysing Equity Portfolios
-Version: 0.5-0
-Date: 2020-03-09
+Version: 0.5-1
+Date: 2020-08-23
 Author: Jeff Enos <jeff@kanecap.com> and David Kane <dave@kanecap.com>,
         with contributions from Daniel Gerlanc <dgerlanc@gmail.com> and
         Kyle Campbell <Kyle.W.Campbell@williams.edu>
