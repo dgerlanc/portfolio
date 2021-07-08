@@ -2,11 +2,30 @@ Package: portfolio
 Title: Analysing Equity Portfolios
 Version: 0.5-1
 Date: 2020-08-23
-Author: Jeff Enos <jeff@kanecap.com> and David Kane <dave@kanecap.com>,
-        with contributions from Daniel Gerlanc <dgerlanc@gmail.com> and
-        Kyle Campbell <Kyle.W.Campbell@williams.edu>
-Description: Classes for analysing and implementing equity portfolios.
-Maintainer: Daniel Gerlanc <dgerlanc@enplusadvisors.com>
+Authors@R: c(
+   person(
+        "Jeff",
+        "Enos",
+        role="aut",
+        email="jeff@kanecap.com"),
+   person(
+       "David",
+       "Kane",
+       role="aut",
+       email="dave@kanecap.com"),
+   person(
+       "Daniel",
+       "Gerlanc",
+       role=c("aut", "cre"),
+       email="dan@gerlanc.com"),
+   person(
+       "Kyle",
+       "Campbell",
+       role="ctb",
+       email="Kyle.W.Campbell@williams.edu"))
+Description: Classes for analysing and implementing equity portfolios,
+    including routines for generating tradelists and calculating
+    exposures to user-specified risk factors.
 Depends:
     R (>= 3.0),
     graphics,
@@ -20,4 +39,5 @@ Imports:
     utils
 License: GPL (>= 2)
 URL: https://github.com/dgerlanc/portfolio
+BugReports: https://github.com/dgerlanc/portfolio/issues
 LazyLoad: yes
