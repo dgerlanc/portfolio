@@ -7,8 +7,17 @@ Author: Jeff Enos <jeff@kanecap.com> and David Kane <dave@kanecap.com>,
         Kyle Campbell <Kyle.W.Campbell@williams.edu>
 Description: Classes for analysing and implementing equity portfolios.
 Maintainer: Daniel Gerlanc <dgerlanc@enplusadvisors.com>
-Depends: R (>= 3.0), methods, graphics, grid, lattice
-Imports: grDevices, nlme, stats, utils
+Depends:
+    R (>= 3.0),
+    graphics,
+    grid,
+    lattice,
+    methods
+Imports:
+    grDevices,
+    nlme,
+    stats,
+    utils
 License: GPL (>= 2)
 URL: https://github.com/dgerlanc/portfolio
 LazyLoad: yes
