@@ -8,7 +8,7 @@
 
 .trellis.multiplot <- function(x){
 
-  if(!class(x) == "list"){
+  if(!inherits(x, "list")){
     stop("x must be of class 'list'")
   }
   if(!all(sapply(x, class) == "trellis")){
