@@ -88,7 +88,7 @@
 
     \item{\code{chunk.usd}:}{Object of class \code{"numeric"} that
       expresses the minimum unsigned market value in US dollars of a
-      chunk. Defaults to \$10,000.}
+      chunk. Defaults to $10,000.}
 
     \item{\code{trade.usd.min}:}{Object of class \code{"numeric"} that
       expresses the minimum unsigned market value a trade must have in
